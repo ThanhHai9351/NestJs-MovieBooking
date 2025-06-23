@@ -210,5 +210,5 @@ This project is licensed under the MIT License.
 ---
 
 <p align="center">
-  Made with ❤️ by Your Name
+  Made with ❤️ by Hari
 </p>
