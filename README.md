@@ -1,241 +1,211 @@
-# Hệ Thống Đặt Vé Xem Phim
+# Movie Booking System - Backend API
 
-<p align="center">
-  <img src="https://img.icons8.com/color/96/000000/cinema-.png" alt="Movie Booking Logo" width="120"/>
-</p>
+A NestJS-based REST API for a movie booking system with user authentication, authorization, and email verification.
 
-<p align="center">
-  Hệ thống đặt vé xem phim hiện đại được xây dựng bằng NestJS và Next.js
-</p>
+## Features
 
-## 📋 Mục Lục
+- 🔐 **Authentication & Authorization**: JWT-based authentication with role-based access control
+- 👥 **User Management**: Complete CRUD operations for users
+- 📧 **Email Verification**: Account activation via email with code verification
+- 🛡️ **Security**: Password hashing, rate limiting, CORS protection
+- 📝 **Logging**: Winston-based logging system
+- 🗄️ **Database**: PostgreSQL with Prisma ORM
+- ✉️ **Email Service**: Nodemailer with Handlebars templates
 
-- [Tính Năng](#-tính-năng)
-- [Công Nghệ Sử Dụng](#-công-nghệ-sử-dụng)
-- [Yêu Cầu Hệ Thống](#-yêu-cầu-hệ-thống)
-- [Cài Đặt](#-cài-đặt)
-- [Cấu Hình](#-cấu-hình)
-- [Chạy Ứng Dụng](#-chạy-ứng-dụng)
-- [API Documentation](#-api-documentation)
-- [Logging](#-logging)
-- [Kiểm Thử](#-kiểm-thử)
-- [Triển Khai](#-triển-khai)
-- [Đóng Góp](#-đóng-góp)
-- [Giấy Phép](#-giấy-phép)
+## Prerequisites
 
-## ✨ Tính Năng
+- Node.js (v18 or higher)
+- PostgreSQL database
+- Gmail account for email service
 
-- 🎬 Xem danh sách phim và lịch chiếu với hiệu ứng 3D
-- 🎟️ Đặt vé và quản lý vé đã đặt
-- 👤 Quản lý tài khoản người dùng
-- 🔒 Xác thực và phân quyền bảo mật
-- 📱 Giao diện thân thiện, responsive
-- 📊 Dashboard quản trị với thống kê chi tiết
-- 🔔 Thông báo real-time về lịch chiếu và vé
-- 💳 Hỗ trợ nhiều phương thức thanh toán
-- 🔍 Tìm kiếm nâng cao với Elasticsearch
-- 🎥 Xem trailer phim với hiệu ứng 3D
+## Installation
 
-## 🛠️ Công Nghệ Sử Dụng
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd server-movie-booking
+   ```
 
-### Backend
-- **Framework**: [NestJS](https://nestjs.com/) - Framework Node.js tiến bộ
-- **Database**: [Prisma](https://www.prisma.io/) với PostgreSQL
-- **Message Queue**: RabbitMQ cho xử lý bất đồng bộ
-- **Search Engine**: Elasticsearch cho tìm kiếm nâng cao
-- **WebSocket**: Socket.io cho real-time communication
-- **Logging**: Winston logger với ELK Stack
-- **Authentication**: JWT và OAuth2
-- **API Documentation**: Swagger/OpenAPI
-- **Testing**: Jest cho unit test và integration test
-- **Containerization**: Docker và Docker Compose
-- **CI/CD**: Jenkins và GitHub Actions
-- **Reverse Proxy**: Nginx
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-### Frontend
-- **Framework**: [Next.js 15](https://nextjs.org/) với TypeScript
-- **UI Framework**: Ant Design (antd)
-- **3D Graphics**: Three.js cho hiệu ứng 3D
-- **State Management**: Redux Toolkit
-- **Data Fetching**: React Query
-- **Real-time**: Socket.io Client
-- **Animation**: Framer Motion
-- **Testing**: Jest và React Testing Library
+3. **Environment Setup**
+   Create a `.env` file in the root directory:
+   ```env
+   # Database Configuration
+   DATABASE_URL="postgresql://username:password@localhost:5432/movie_booking?schema=public"
+   
+   # JWT Configuration
+   JWT_SECRET="your-super-secret-jwt-key-here-change-in-production"
+   
+   # Email Configuration
+   EMAIL="your-email@gmail.com"
+   PASSWORD="your-app-password"
+   
+   # Server Configuration
+   PORT=5000
+   NODE_ENV=development
+   
+   # Logging
+   LOG_LEVEL=info
+   ```
 
-## 📋 Yêu Cầu Hệ Thống
+4. **Database Setup**
+   ```bash
+   # Generate Prisma client
+   npx prisma generate
+   
+   # Run database migrations
+   npx prisma migrate dev
+   
+   # (Optional) Seed database
+   npx prisma db seed
+   ```
 
-### Development
-- Node.js (v18 trở lên)
-- npm hoặc yarn
-- Docker và Docker Compose
-- Git
+5. **Start the application**
+   ```bash
+   # Development mode
+   npm run start:dev
+   
+   # Production mode
+   npm run build
+   npm run start:prod
+   ```
 
-### Production
-- Docker Engine
-- Docker Compose
-- Nginx
-- PostgreSQL (v14 trở lên)
-- Redis
-- RabbitMQ
-- Elasticsearch
-- Jenkins
-- GitHub Actions
+## API Endpoints
 
-## 🚀 Cài Đặt
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/check-code` - Verify activation code
+- `POST /api/auth/retry-active` - Resend activation code
+- `GET /api/auth/profile` - Get user profile (protected)
 
-1. Clone repository:
-```bash
-git clone https://github.com/your-username/movie-booking.git
-cd movie-booking
+### Users (Protected)
+- `GET /api/users` - Get all users (with pagination and filtering)
+- `GET /api/users/:id` - Get user by ID
+- `POST /api/users` - Create new user
+- `PATCH /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
+
+## Authentication Flow
+
+1. **Registration**: User registers with email and password
+2. **Email Verification**: System sends activation code via email
+3. **Account Activation**: User enters activation code to activate account
+4. **Login**: User logs in with email and password
+5. **JWT Token**: System returns JWT token for subsequent requests
+
+## Request/Response Format
+
+All API responses follow this format:
+```json
+{
+  "statusCode": 200,
+  "message": "Success message",
+  "data": {
+    // Response data
+  }
+}
 ```
 
-2. Cài đặt dependencies:
-```bash
-# Backend
-cd backend
-npm install
+## Error Handling
 
-# Frontend
-cd ../frontend
-npm install
+The API uses standard HTTP status codes:
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request
+- `401` - Unauthorized
+- `403` - Forbidden
+- `404` - Not Found
+- `500` - Internal Server Error
+
+## Security Features
+
+- **Password Hashing**: BCrypt with salt rounds
+- **JWT Tokens**: Secure token-based authentication
+- **Rate Limiting**: Throttling to prevent abuse
+- **CORS Protection**: Configurable cross-origin requests
+- **Input Validation**: Class-validator for request validation
+- **Helmet**: Security headers
+
+## Database Schema
+
+### User Model
+```prisma
+model User {
+  id          Int       @id @default(autoincrement())
+  name        String
+  english_name String?
+  email       String    @unique
+  phone       String?
+  address     String?
+  password    String
+  is_active   Boolean   @default(false)
+  active_code String?
+  expired_code DateTime?
+  latest_login DateTime?
+  login_type   String? @default("LOCAL")
+  avatar_url   String?
+  role         String @default("customer")
+  point        Int       @default(0)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt @default(now())
+}
 ```
 
-3. Tạo file `.env` từ `.env.example`:
-```bash
-# Backend
-cd backend
-cp .env.example .env
+## Development
 
-# Frontend
-cd ../frontend
-cp .env.example .env
+### Available Scripts
+- `npm run dev` - Start in development mode with watch
+- `npm run build` - Build the application
+- `npm run start` - Start the application
+- `npm run test` - Run tests
+- `npm run test:e2e` - Run end-to-end tests
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+
+### Project Structure
+```
+src/
+├── auth/                 # Authentication module
+│   ├── dto/             # Data transfer objects
+│   ├── passport/        # Passport strategies and guards
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   └── auth.module.ts
+├── modules/
+│   └── users/           # Users module
+│       ├── dto/         # User DTOs
+│       ├── entities/    # User entities
+│       ├── users.controller.ts
+│       ├── users.service.ts
+│       └── users.module.ts
+├── core/                # Core utilities
+├── decorator/           # Custom decorators
+├── helpers/             # Helper functions
+├── logger/              # Logging configuration
+├── mail/                # Email templates
+├── prisma/              # Database service
+├── app.controller.ts
+├── app.service.ts
+├── app.module.ts
+└── main.ts
 ```
 
-## ⚙️ Cấu Hình
+## Contributing
 
-### Backend (.env)
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/movie_booking"
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-# JWT
-JWT_SECRET="your-secret-key"
-JWT_EXPIRATION="1d"
+## License
 
-# Redis
-REDIS_HOST="localhost"
-REDIS_PORT=6379
-
-# RabbitMQ
-RABBITMQ_URL="amqp://localhost:5672"
-RABBITMQ_QUEUE="movie_booking"
-
-# Elasticsearch
-ELASTICSEARCH_URL="http://localhost:9200"
-
-# WebSocket
-WS_PORT=3001
-
-# Email
-SMTP_HOST="smtp.example.com"
-SMTP_PORT=587
-SMTP_USER="your-email@example.com"
-SMTP_PASS="your-password"
-
-# Payment Gateway
-PAYMENT_GATEWAY_API_KEY="your-api-key"
-```
-
-### Frontend (.env)
-```env
-NEXT_PUBLIC_API_URL="http://localhost:3000"
-NEXT_PUBLIC_WS_URL="ws://localhost:3001"
-```
-
-## 🏃 Chạy Ứng Dụng
-
-### Development
-
-1. Chạy backend:
-```bash
-cd backend
-npm run start:dev
-```
-
-2. Chạy frontend:
-```bash
-cd frontend
-npm run dev
-```
-
-### Production với Docker
-
-1. Build và chạy containers:
-```bash
-docker-compose up --build
-```
-
-## 📚 API Documentation
-
-Truy cập Swagger UI tại: `http://localhost:3000/api/docs`
-
-## 📝 Logging
-
-Hệ thống sử dụng ELK Stack (Elasticsearch, Logstash, Kibana) với Winston logger:
-- Ghi log ra console với màu sắc
-- Lưu log vào Elasticsearch
-- Phân tích log với Kibana
-- Monitoring với Grafana
-
-## 🧪 Kiểm Thử
-
-### Backend
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
-```
-
-### Frontend
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-```
-
-## 🚀 Triển Khai
-
-### CI/CD Pipeline
-1. **GitHub Actions** cho automated testing
-2. **Jenkins** cho deployment
-3. **Docker** cho containerization
-4. **Nginx** cho reverse proxy và load balancing
-
-### Deployment Steps
-1. Push code lên GitHub
-2. GitHub Actions chạy tests
-3. Jenkins build Docker images
-4. Deploy lên production server
-5. Nginx cấu hình SSL và load balancing
-
-## 🤝 Đóng Góp
-
-1. Fork repository
-2. Tạo branch mới (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add some amazing feature'`)
-4. Push lên branch (`git push origin feature/amazing-feature`)
-5. Mở Pull Request
-
-## 📄 Giấy Phép
-
-Dự án được phân phối dưới giấy phép MIT. Xem file `LICENSE` để biết thêm chi tiết.
+This project is licensed under the MIT License.
 
 ---
 

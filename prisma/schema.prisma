@@ -14,8 +14,22 @@ datasource db {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  email String  @unique
-  name  String?
+  id          Int       @id @default(autoincrement())
+  name        String
+  english_name String?
+  email       String    @unique
+  phone       String?
+  address     String?
+  password    String
+  is_active   Boolean   @default(false)
+  active_code String?
+  expired_code DateTime?
+  latest_login DateTime?
+  login_type   String? @default("LOCAL")
+  avatar_url   String?
+  role         String @default("customer")
+  point        Int       @default(0)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt @default(now())
 }
 

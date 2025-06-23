@@ -11,13 +11,6 @@ if (!fs.existsSync(logDir)) {
 }
 
 export const winstonLoggerConfig: winston.LoggerOptions = {
-  //   level: 'info',
-  //   format: winston.format.combine(
-  //     winston.format.timestamp(),
-  //     winston.format.errors({ stack: true }),
-  //     winston.format.splat(),
-  //     winston.format.json(),
-  //   ),
   defaultMeta: { service: 'movie-booking' },
   transports: [
     new winston.transports.Console({
